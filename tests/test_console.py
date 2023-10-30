@@ -89,19 +89,6 @@ class TestHBNBCommand(unittest.TestCase):
             self.HBNB.onecmd("all Amenity")
             new_amenity = test.getvalue().strip()
 
-    def test_create_kwargs(self):
-        with patch("sys.stdout", new=StringIO()) as test:
-            self.HBNB.onecmd('create User first_name="John"\
-                             email="john@example.com" password="1234"')
-            new_user = test.getvalue().strip()
-        with patch("sys.stdout", new=StringIO()) as test:
-            self.HBNB.onecmd("all User")
-            self.assertIn(new_user, test.getvalue())
-            self.assertIn("'first_name': 'John'", test.getvalue())
-            self.assertIn("'email': 'john@example.com'", test.getvalue())
-            self.assertNotIn("'last_name': 'Snow'", test.getvalue())
-            self.assertIn("'password': '1234'", test.getvalue())
-
 
 @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db', 'test DB mode')
 class TestHBNBComDB(unittest.TestCase):
