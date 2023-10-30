@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" Tests for amenity class"""
+""" Tests for amenity class """
 import unittest
 import models
 from models.amenity import Amenity
@@ -37,6 +37,6 @@ class test_Amenity(unittest.TestCase):
 
     @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') == 'db', "not supported")
     def test_amenity_instance(self):
-        """ Check that amenity is an instance of Amenity class"""
+        """ Check that amenity is an instance of Amenity class """
         amenity = self.value()
         self.assertTrue(isinstance(amenity, Amenity))
