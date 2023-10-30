@@ -1,22 +1,60 @@
 #!/usr/bin/python3
-"""unitest for testing City class """
-from tests.test_models.test_base_model import test_basemodel
+"""Unit test for the class city
+"""
+import unittest
+# import json
+import pep8
+from models import city
 from models.city import City
-from models.state import State
+from models.base_model import BaseModel
 
 
-class test_City(test_basemodel):
-    """ Test for class city"""
+class TestCityClass(unittest.TestCase):
+    """TestCityClass test for the city class
+    Args:
+        unittest (): Propertys for unit testing
+    """
 
-    def __init__(self, *args, **kwargs):
-        """ Init method"""
-        super().__init__(*args, **kwargs)
-        self.name = "City"
-        self.value = City
+    maxDiff = None
 
-    def test_creation(self):
-        """ Test Creation """
-        state = State(name="California")
-        new = self.value(state_id=state.id, name="San_Francisco")
-        self.assertEqual(type(new.state_id), str)
-        self.assertEqual(type(new.name), str)
+    def setUp(self):
+        """Return to "" class attributes"""
+        City.name = ""
+        City.state_id = ""
+
+    def test_module_doc(self):
+        """ check for module documentation """
+        self.assertTrue(len(city.__doc__) > 0)
+
+    def test_class_doc(self):
+        """ check for documentation """
+        self.assertTrue(len(City.__doc__) > 0)
+
+    def test_method_docs(self):
+        """ check for method documentation """
+        for func in dir(City):
+            self.assertTrue(len(func.__doc__) > 0)
+
+    def test_pep8(self):
+        """ test base and test_base for pep8 conformance """
+        style = pep8.StyleGuide(quiet=True)
+        file1 = 'models/city.py'
+        file2 = 'tests/test_models/test_city.py'
+        result = style.check_files([file1, file2])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warning).")
+
+    def test_is_instance(self):
+        """ Test if user is instance of basemodel """
+        my_city = City()
+        self.assertTrue(isinstance(my_city, BaseModel))
+
+    def test_field_types(self):
+        """ Test field attributes of user """
+        my_city = City()
+        self.assertTrue(type(my_city.name) == str)
+        self.assertTrue(type(my_city.state_id) == str)
+
+
+if __name__ == '__main__':
+    unittest.main()

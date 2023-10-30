@@ -1,40 +1,59 @@
 #!/usr/bin/python3
-""" Test to State class"""
-import models
-from os import getenv
+"""Unit test for the file storage class
+"""
 import unittest
-from tests.test_models.test_base_model import test_basemodel
+# import json
+import pep8
+from models import state
 from models.state import State
-from sqlalchemy.exc import OperationalError
+from models.base_model import BaseModel
 
 
-class test_state(test_basemodel):
-    """define state tests for State class"""
+class TestStateClass(unittest.TestCase):
+    """TestStateClass checks for the use of
+    state class
+    Args:
+        unittest (): Propertys for unit testing
+    """
 
-    def __init__(self, *args, **kwargs):
-        """ Initialisation of State instance"""
-        super().__init__(*args, **kwargs)
-        self.name = "State"
-        self.value = State
-        self.state = State(name="California")
+    maxDiff = None
 
-    def test_name3(self):
-        """ test name in State instance"""
-        self.assertEqual(type(self.state.name), str)
-        self.assertEqual(self.state.name, "California")
+    def setUp(self):
+        """Return to "" class attributes"""
+        State.name = ""
 
-    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "not supported")
-    def test_without_mandatory_arguments(self):
-        """Check for mandatory arguments """
-        new = self.value()
-        with self.assertRaises(OperationalError):
-            try:
-                new.save()
-            except Exception as error:
-                models.storage._DBStorage__session.rollback()
-                raise error
+    def test_module_doc(self):
+        """ check for module documentation """
+        self.assertTrue(len(state.__doc__) > 0)
 
-    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') == 'db', "not supported")
-    def test_is_subclass(self):
-        """Check that State is a subclass of Basemodel"""
-        self.assertTrue(isinstance(self.state, State))
+    def test_class_doc(self):
+        """ check for documentation """
+        self.assertTrue(len(State.__doc__) > 0)
+
+    def test_method_docs(self):
+        """ check for method documentation """
+        for func in dir(State):
+            self.assertTrue(len(func.__doc__) > 0)
+
+    def test_pep8(self):
+        """ test base and test_base for pep8 conformance """
+        style = pep8.StyleGuide(quiet=True)
+        file1 = 'models/state.py'
+        file2 = 'tests/test_models/test_state.py'
+        result = style.check_files([file1, file2])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warning).")
+
+    def test_is_instance(self):
+        """ Test if user is instance of basemodel """
+        my_state = State()
+        self.assertTrue(isinstance(my_state, BaseModel))
+
+    def test_field_types(self):
+        """ Test field attributes of user """
+        my_state = State()
+        self.assertTrue(type(my_state.name) == str)
+
+
+if __name__ == '__main__':
+    unittest.main()

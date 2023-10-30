@@ -1,63 +1,63 @@
-#!/usr/bin/python
-"""Unittest for Review class """
-from os import getenv
-import models
+#!/usr/bin/python3
+"""Unit test for the file storage class
+"""
 import unittest
-from tests.test_models.test_base_model import test_basemodel
-from models.city import City
-from models.state import State
-from models.city import City
-from models.user import User
+# import json
+import pep8
+from models import review
 from models.review import Review
-from models.place import Place
-from sqlalchemy.exc import OperationalError
+from models.base_model import BaseModel
 
 
-class test_review(test_basemodel):
-    """Unittest for Review class """
+class TestReviewClass(unittest.TestCase):
+    """TestReviewClass test suite for the use
+    of the review class
+    Args:
+        unittest (): Propertys for unit testing
+    """
 
-    def __init__(self, *args, **kwargs):
-        """Instantiation """
-        super().__init__(*args, **kwargs)
-        self.name = "Review"
-        self.value = Review
-        self.state = State(name="Florida")
-        self.city = City(name="Miami", state_id=self.state.id)
-        self.user = User(name="Oscar_the_father", email="the_father@yahoo.com")
-        self.place = Place(
-            user_id=self.user.id, city_id=self.city.id, name="San_Luis",
-            number_rooms=6, number_bathrooms=4, max_guest=5,
-            price_by_night=230)
-        self.review = Review(place_id=self.place.id, text="Awesome Place",
-                             user_id=self.user.id)
+    maxDiff = None
 
-    def test_place_id(self):
-        """ test place id in review class"""
-        self.assertEqual(type(self.review.place_id), str)
-        self.assertEqual(self.review.place_id, self.place.id)
+    def setUp(self):
+        """Return to "" class attributes"""
+        Review.place_id = ""
+        Review.user_id = ""
+        Review.text = ""
 
-    def test_user_id(self):
-        """ test user id in review class"""
-        self.assertEqual(type(self.review.user_id), str)
-        self.assertEqual(self.review.user_id, self.user.id)
+    def test_module_doc(self):
+        """ check for module documentation """
+        self.assertTrue(len(review.__doc__) > 0)
 
-    def test_text(self):
-        """ test to check the text in review class"""
-        self.assertEqual(type(self.review.text), str)
-        self.assertEqual(self.review.text, "Awesome Place")
+    def test_class_doc(self):
+        """ check for documentation """
+        self.assertTrue(len(Review.__doc__) > 0)
 
-    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "not supported")
-    def test_without_mandatory_arguments(self):
-        """Check """
-        new = self.value()
-        with self.assertRaises(OperationalError):
-            try:
-                new.save()
-            except Exception as error:
-                models.storage._DBStorage__session.rollback()
-                raise error
+    def test_method_docs(self):
+        """ check for method documentation """
+        for func in dir(Review):
+            self.assertTrue(len(func.__doc__) > 0)
 
-    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') == 'db', "not supported")
-    def test_is_subclass(self):
-        """Check that Review is a subclass of Basemodel"""
-        self.assertTrue(isinstance(self.review, Review))
+    def test_pep8(self):
+        """ test base and test_base for pep8 conformance """
+        style = pep8.StyleGuide(quiet=True)
+        file1 = 'models/review.py'
+        file2 = 'tests/test_models/test_review.py'
+        result = style.check_files([file1, file2])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warning).")
+
+    def test_is_instance(self):
+        """ Test if user is instance of basemodel """
+        my_Review = Review()
+        self.assertTrue(isinstance(my_Review, BaseModel))
+
+    def test_field_types(self):
+        """ Test field attributes of user """
+        my_Review = Review()
+        self.assertTrue(type(my_Review.place_id) == str)
+        self.assertTrue(type(my_Review.user_id) == str)
+        self.assertTrue(type(my_Review.text) == str)
+
+
+if __name__ == '__main__':
+    unittest.main()

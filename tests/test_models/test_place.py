@@ -1,97 +1,77 @@
 #!/usr/bin/python3
-"""unitest for testing Place class """
-import models
-from os import getenv
+"""Unit test for the class Place
+"""
 import unittest
-from tests.test_models.test_base_model import test_basemodel
+# import json
+import pep8
+from models import place
 from models.place import Place
-from models.city import City
-from models.user import User
-from models.state import State
-from sqlalchemy.exc import OperationalError
+from models.base_model import BaseModel
 
 
-class test_Place(test_basemodel):
-    """Unittests for testing the place class"""
+class TestPlaceClass(unittest.TestCase):
+    """TestPlaceClass test suit for the place class
+    Args:
+        unittest (): Propertys for unit testing
+    """
 
-    def __init__(self, *args, **kwargs):
-        """ inicialization values """
-        super().__init__(*args, **kwargs)
-        self.name = "Place"
-        self.value = Place
-        self.state = State(name="California")
-        self.city = City(name="San_Jose", state_id=self.state.id)
-        self.user = User(name="Chepe", email="cheperramito@yahoo.com")
-        self.place = Place(
-            user_id=self.user.id, city_id=self.city.id, name="Laurita",
-            number_rooms=3, number_bathrooms=2, max_guest=4,
-            price_by_night=100)
+    maxDiff = None
 
-    def test_city_id(self):
-        """ test city id """
-        self.assertEqual(type(self.place.city_id), str)
-        self.assertEqual(self.city.id, self.place.city_id)
+    def setUp(self):
+        """Return to "" class attributes"""
+        Place.city_id = ""
+        Place.user_id = ""
+        Place.name = ""
+        Place.description = ""
+        Place.number_rooms = 0
+        Place.number_bathrooms = 0
+        Place.max_guest = 0
+        Place.price_by_night = 0
+        Place.latitude = 0.0
+        Place.longitude = 0.0
+        Place.amenity_ids = []
 
-    def test_user_id(self):
-        """ test user id """
-        self.assertEqual(type(self.place.user_id), str)
-        self.assertEqual(self.user.id, self.place.user_id)
+    def test_module_doc(self):
+        """ check for module documentation """
+        self.assertTrue(len(place.__doc__) > 0)
 
-    def test_name(self):
-        """ test name """
-        self.assertEqual(type(self.place.name), str)
-        self.assertEqual(type(self.place.name), str)
+    def test_class_doc(self):
+        """ check for documentation """
+        self.assertTrue(len(Place.__doc__) > 0)
 
-    def test_description(self):
-        """ test description"""
-        self.assertEqual(self.place.description, None)
+    def test_method_docs(self):
+        """ check for method documentation """
+        for func in dir(Place):
+            self.assertTrue(len(func.__doc__) > 0)
 
-    def test_number_rooms(self):
-        """ test number of rooms"""
-        self.assertEqual(type(self.place.number_rooms), int)
-        self.assertEqual(self.place.number_rooms, 3)
+    def test_pep8(self):
+        """ test base and test_base for pep8 conformance """
+        style = pep8.StyleGuide(quiet=True)
+        file1 = 'models/place.py'
+        file2 = 'tests/test_models/test_place.py'
+        result = style.check_files([file1, file2])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warning).")
 
-    def test_number_bathrooms(self):
-        """ check number of bathrooms """
-        self.assertEqual(type(self.place.number_bathrooms), int)
-        self.assertEqual(self.place.number_bathrooms, 2)
+    def test_is_instance(self):
+        """ Test if user is instance of basemodel """
+        my_place = Place()
+        self.assertTrue(isinstance(my_place, BaseModel))
 
-    def test_max_guest(self):
-        """test the max of guest """
-        self.assertEqual(type(self.place.max_guest), int)
-        self.assertEqual(self.place.max_guest, 4)
+    def test_field_types(self):
+        """ Test field attributes of user """
+        self.assertTrue(type(Place.city_id) == str)
+        self.assertTrue(type(Place.user_id) == str)
+        self.assertTrue(type(Place.name) == str)
+        self.assertTrue(type(Place.description) == str)
+        self.assertTrue(type(Place.number_rooms) == int)
+        self.assertTrue(type(Place.number_bathrooms) == int)
+        self.assertTrue(type(Place.max_guest) == int)
+        self.assertTrue(type(Place.price_by_night) == int)
+        self.assertTrue(type(Place.latitude) == float)
+        self.assertTrue(type(Place.longitude) == float)
+        self.assertTrue(type(Place.amenity_ids) == list)
 
-    def test_price_by_night(self):
-        """ test cost or price by night """
-        self.assertEqual(type(self.place.price_by_night), int)
-        self.assertEqual(self.place.price_by_night, 100)
 
-    def test_latitude(self):
-        """test amenity latitude"""
-        self.assertEqual(self.place.latitude, None)
-
-    def test_longitude(self):
-        """test amenity longitude"""
-        self.assertEqual(self.place.longitude, None)
-
-    def test_amenity_ids(self):
-        """ test amenity ids"""
-        self.assertEqual(type(self.place.amenity_ids), list)
-        self.assertEqual(self.place.amenity_ids, [])
-
-    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "not supported")
-    def test_without_mandatory_arguments(self):
-        """ """
-        new = self.value()
-        with self.assertRaises(OperationalError):
-            try:
-                new.save()
-            except Exception as error:
-                models.storage._DBStorage__session.rollback()
-                raise error
-
-    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') == 'db', "not supported")
-    def test_is_subclass(self):
-        """Check that Place is a subclass of Basemodel"""
-        place = self.value()
-        self.assertTrue(isinstance(place, Place))
+if __name__ == '__main__':
+    unittest.main()

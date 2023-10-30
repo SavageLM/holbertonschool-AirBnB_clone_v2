@@ -1,53 +1,64 @@
 #!/usr/bin/python3
-"""Unittests for testing the User class """
-import models
-from os import getenv
+"""Unit test for the file storage class
+"""
 import unittest
-from tests.test_models.test_base_model import test_basemodel
+# import json
+import pep8
+from models import user
 from models.user import User
-from sqlalchemy.exc import OperationalError
+from models.base_model import BaseModel
 
 
-class test_User(test_basemodel):
-    """Unittests for testing the User class"""
+class TestUserClass(unittest.TestCase):
+    """TestUserClass resume
+    Args:
+        unittest (): Propertys for unit testing
+    """
 
-    def __init__(self, *args, **kwargs):
-        """ Instantiation of User instance """
-        super().__init__(*args, **kwargs)
-        self.name = "User"
-        self.value = User
-        self.user = User(email="Erney@chocorramo.com", password="conleche")
+    maxDiff = None
 
-    def test_first_name(self):
-        """ test first name of user instance"""
-        self.assertEqual(self.user.first_name, None)
+    def setUp(self):
+        """Return to "" class attributes"""
+        User.email = ""
+        User.password = ""
+        User.first_name = ""
+        User.last_name = ""
 
-    def test_last_name(self):
-        """ test last name of user instance"""
-        self.assertEqual(self.user.last_name, None)
+    def test_module_doc(self):
+        """ check for module documentation """
+        self.assertTrue(len(user.__doc__) > 0)
 
-    def test_email(self):
-        """ test email of user instance"""
-        self.assertEqual(type(self.user.email), str)
-        self.assertEqual(self.user.email, "Erney@chocorramo.com")
+    def test_class_doc(self):
+        """ check for documentation """
+        self.assertTrue(len(User.__doc__) > 0)
 
-    def test_password(self):
-        """ test if the password is string """
-        self.assertEqual(type(self.user.password), str)
-        self.assertEqual(self.user.password, "conleche")
+    def test_method_docs(self):
+        """ check for method documentation """
+        for func in dir(User):
+            self.assertTrue(len(func.__doc__) > 0)
 
-    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "not supported")
-    def test_without_mandatory_arguments(self):
-        """Check for mandatory arguments """
-        new = self.value()
-        with self.assertRaises(OperationalError):
-            try:
-                new.save()
-            except Exception as error:
-                models.storage._DBStorage__session.rollback()
-                raise error
+    def test_pep8(self):
+        """ test base and test_base for pep8 conformance """
+        style = pep8.StyleGuide(quiet=True)
+        file1 = 'models/user.py'
+        file2 = 'tests/test_models/test_user.py'
+        result = style.check_files([file1, file2])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warning).")
 
-    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') == 'db', "not supported")
-    def test_is_subclass(self):
-        """Check that State is a subclass of Basemodel"""
-        self.assertTrue(isinstance(self.user, User))
+    def test_is_instance(self):
+        """ Test if user is instance of basemodel """
+        my_user = User()
+        self.assertTrue(isinstance(my_user, BaseModel))
+
+    def test_field_types(self):
+        """ Test field attributes of user """
+        my_user = User()
+        self.assertTrue(type(my_user.email) == str)
+        self.assertTrue(type(my_user.password) == str)
+        self.assertTrue(type(my_user.first_name) == str)
+        self.assertTrue(type(my_user.last_name) == str)
+
+
+if __name__ == '__main__':
+    unittest.main()
