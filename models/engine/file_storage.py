@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""This module defines a class to manage file storage for hbnb clone"""
+""" This module defines a class to manage file storage for hbnb clone"""
 import json
 from models.base_model import BaseModel
 from models.user import User
@@ -22,51 +22,46 @@ class FileStorage:
     __objects = {}
 
     def all(self, cls=None):
-        """Returns a dictionary of models currently in storage"""
+        """Returns a dictionary of models currently in storage of class"""
         if cls is not None:
-            if type(cls) is str:
+            if type(cls) == str:
                 cls = eval(cls)
             cls_dict = {}
             for key, value in self.__objects.items():
-                if type(value) is cls:
+                if type(value) == cls:
                     cls_dict[key] = value
             return cls_dict
-        return FileStorage.__objects
+        return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
-        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
+        self.__objects["{}.{}".format(type(obj).__name__, obj.id)] = obj
 
     def save(self):
         """Saves storage dictionary to file"""
-        with open(FileStorage.__file_path, 'w') as f:
-            temp = {}
-            temp.update(FileStorage.__objects)
-            for key, val in temp.items():
-                temp[key] = val.to_dict()
-            json.dump(temp, f)
+        td = {o: self.__objects[o].to_dict() for o in self.__objects.keys()}
+        with open(self.__file_path, 'w') as file:
+            json.dump(td, file)
 
     def reload(self):
         """Loads storage dictionary from file"""
 
-        classes = {
-                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
-                    'State': State, 'City': City, 'Amenity': Amenity,
-                    'Review': Review
-                  }
         try:
-            temp = {}
-            with open(FileStorage.__file_path, 'r') as f:
-                temp = json.load(f)
-                for key, val in temp.items():
-                    self.all()[key] = classes[val['__class__']](**val)
+            with open(self.__file_path, 'r') as file:
+                for obj in json.load(file).values():
+                    cname = obj["__class__"]
+                    del obj["__class__"]
+                    self.new(eval(cname)(**obj))
         except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
         """ Deletes a given object from __objects if it exists """
-
         try:
             del self.__objects["{}.{}".format(type(obj).__name__, obj.id)]
         except (AttributeError, KeyError):
             pass
+
+    def close(self):
+        """ Call the reload method."""
+        self.reload()
