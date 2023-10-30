@@ -35,7 +35,7 @@ class test_fileStorage(unittest.TestCase):
     #     self.assertIn(new.__dict__, storage.all().values())
 
     def test_created_at(self):
-        """"""
+        """ Testing the created_at type """
         new = BaseModel()
         self.assertTrue(type(new.created_at) is datetime)
         
