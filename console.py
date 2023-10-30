@@ -2,6 +2,8 @@
 """ Defines the module for Console """
 import cmd
 import sys
+from shlex import split
+from datetime import datetime
 from models.base_model import BaseModel
 from models import storage
 from models.state import State
@@ -80,7 +82,7 @@ class HBNBCommand(cmd.Cmd):
                         # _args = _args.replace('\"', '')
             line = ' '.join([_cmd, _cls, _id, _args])
 
-        except Exception as mess:
+        except Exception:
             pass
         finally:
             return line
@@ -114,26 +116,34 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        split_array = args.split(" ")
-        if not args:
-            print("** class name missing **")
-            return
-        elif split_array[0] not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[split_array[0]]()
-        split_parameters = split_array[1:]
-        for value in split_parameters:
-            split = value.split("=")
-            if (split[1][0] == '"'):
-                new_instance.__dict__[
-                    split[0]] = split[1][1:-1].replace("_", " ")
+        try:
+            if not args:
+                raise SyntaxError()
+            my_args = args.split(" ")
+            if my_args[0] not in HBNBCommand.classes:
+                raise SyntaxError()
+            kwargs = {}
+            for i in range (1, len(my_args)):
+                key, value = tuple(my_args[i].split("="))
+                if value[0] == '"':
+                    value = value.strip('"').replace("_", " ")
+                else:
+                    try:
+                        value = eval(value)
+                    except (SyntaxError, NameError):
+                        continue
+                kwargs[key] = value
+            if kwargs == {}:
+                obj = eval(my_args[0])()
             else:
-                new_instance.__dict__[split[0]] = split[1].replace("_", " ")
-        storage.new(new_instance)
-        storage.save()
-        print(new_instance.id)
-        storage.save()
+                obj = eval(my_args[0])(**kwargs)
+                storage.new(obj)
+            print(obj.id)
+            obj.save()
+        except SyntaxError:
+            print("** class name missing **")
+        except NameError:
+            print("** class doesn't exist **")
 
     def help_create(self):
         """ Help information for the create method """
