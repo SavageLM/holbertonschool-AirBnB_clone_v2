@@ -1,38 +1,63 @@
-#!/usr/bin/python3
-""" """
-from tests.test_models.test_base_model import TestBaseModel
-from models.review import Review
+#!/usr/bin/python
+"""Unittest for Review class """
+from os import getenv
+import models
+import unittest
+from tests.test_models.test_base_model import test_basemodel
+from models.city import City
+from models.state import State
+from models.city import City
 from models.user import User
+from models.review import Review
+from models.place import Place
+from sqlalchemy.exc import OperationalError
 
 
-class test_review(TestBaseModel):
-    """ """
+class test_review(test_basemodel):
+    """Unittest for Review class """
 
     def __init__(self, *args, **kwargs):
-        """ """
+        """Instantiation """
         super().__init__(*args, **kwargs)
         self.name = "Review"
         self.value = Review
+        self.state = State(name="Florida")
+        self.city = City(name="Miami", state_id=self.state.id)
+        self.user = User(name="Oscar_the_father", email="the_father@yahoo.com")
+        self.place = Place(
+            user_id=self.user.id, city_id=self.city.id, name="San_Luis",
+            number_rooms=6, number_bathrooms=4, max_guest=5,
+            price_by_night=230)
+        self.review = Review(place_id=self.place.id, text="Awesome Place",
+                             user_id=self.user.id)
 
     def test_place_id(self):
-        """Test the place_id attribute of the Review class"""
-        new = Review()
-        new.place_id = "test_place_id"
-        self.assertEqual(type(new.place_id), str)
+        """ test place id in review class"""
+        self.assertEqual(type(self.review.place_id), str)
+        self.assertEqual(self.review.place_id, self.place.id)
 
     def test_user_id(self):
-        """ Test that user_id is a string """
-        new_user = User(email="john@example.com", password="password")
-        new_user.save()
-        new_review = Review(place_id="123", user_id=new_user.id,
-                            text="Test review")
-        new_review.save()
-        self.assertEqual(type(new_review.user_id), str)
+        """ test user id in review class"""
+        self.assertEqual(type(self.review.user_id), str)
+        self.assertEqual(self.review.user_id, self.user.id)
 
     def test_text(self):
-        """ """
+        """ test to check the text in review class"""
+        self.assertEqual(type(self.review.text), str)
+        self.assertEqual(self.review.text, "Awesome Place")
+
+    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "not supported")
+    def test_without_mandatory_arguments(self):
+        """Check """
         new = self.value()
-        if new.text is None:
-            new.text = ''
-        self.assertIsInstance(new.text, str)
-        self.assertEqual(new.text, '')
+        with self.assertRaises(OperationalError):
+            try:
+                new.save()
+            except Exception as error:
+                models.storage._DBStorage__session.rollback()
+                raise error
+
+    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') == 'db', "not supported")
+    def test_is_subclass(self):
+        """Check that Review is a subclass of Basemodel"""
+        self.assertTrue(isinstance(self.review, Review))
