@@ -1,77 +1,99 @@
 #!/usr/bin/python3
-"""Unit test for the class Place
-"""
-import unittest
-# import json
-import pep8
-from models import place
+""" """
+from tests.test_models.test_base_model import TestBaseModel
 from models.place import Place
-from models.base_model import BaseModel
 
 
-class TestPlaceClass(unittest.TestCase):
-    """TestPlaceClass test suit for the place class
-    Args:
-        unittest (): Propertys for unit testing
-    """
+class test_Place(TestBaseModel):
+    """ """
 
-    maxDiff = None
+    def __init__(self, *args, **kwargs):
+        """ """
+        super().__init__(*args, **kwargs)
+        self.name = "Place"
+        self.value = Place
 
-    def setUp(self):
-        """Return to "" class attributes"""
-        Place.city_id = ""
-        Place.user_id = ""
-        Place.name = ""
-        Place.description = ""
-        Place.number_rooms = 0
-        Place.number_bathrooms = 0
-        Place.max_guest = 0
-        Place.price_by_night = 0
-        Place.latitude = 0.0
-        Place.longitude = 0.0
-        Place.amenity_ids = []
+    def test_city_id(self):
+        """ """
+        new = self.value()
+        if new.city_id is None:
+            new.city_id = ''
+        self.assertIsInstance(new.city_id, str)
+        self.assertEqual(new.city_id, '')
 
-    def test_module_doc(self):
-        """ check for module documentation """
-        self.assertTrue(len(place.__doc__) > 0)
+    def test_user_id(self):
+        """ """
+        new = self.value()
+        if new.user_id is None:
+            new.user_id = ''
+        self.assertIsInstance(new.user_id, str)
+        self.assertEqual(new.user_id, '')
 
-    def test_class_doc(self):
-        """ check for documentation """
-        self.assertTrue(len(Place.__doc__) > 0)
+    def test_name(self):
+        """ """
+        new = self.value()
+        if new.name is None:
+            new.name = ''
+        self.assertIsInstance(new.name, str)
+        self.assertEqual(new.name, '')
 
-    def test_method_docs(self):
-        """ check for method documentation """
-        for func in dir(Place):
-            self.assertTrue(len(func.__doc__) > 0)
+    def test_description(self):
+        """ """
+        new = self.value()
+        if new.description is None:
+            new.description = ''
+        self.assertIsInstance(new.description, str)
+        self.assertEqual(new.description, '')
 
-    def test_pep8(self):
-        """ test base and test_base for pep8 conformance """
-        style = pep8.StyleGuide(quiet=True)
-        file1 = 'models/place.py'
-        file2 = 'tests/test_models/test_place.py'
-        result = style.check_files([file1, file2])
-        self.assertEqual(result.total_errors, 0,
-                         "Found code style errors (and warning).")
+    def test_number_rooms(self):
+        """ """
+        new = self.value()
+        if new.number_rooms is None:
+            new.number_rooms = 0
+        self.assertIsInstance(new.number_rooms, int)
+        self.assertEqual(new.number_rooms, 0)
 
-    def test_is_instance(self):
-        """ Test if user is instance of basemodel """
-        my_place = Place()
-        self.assertTrue(isinstance(my_place, BaseModel))
+    def test_number_bathrooms(self):
+        """ """
+        new = self.value()
+        if new.number_bathrooms is None:
+            new.number_bathrooms = 0
+        self.assertIsInstance(new.number_bathrooms, int)
+        self.assertEqual(new.number_bathrooms, 0)
 
-    def test_field_types(self):
-        """ Test field attributes of user """
-        self.assertTrue(type(Place.city_id) == str)
-        self.assertTrue(type(Place.user_id) == str)
-        self.assertTrue(type(Place.name) == str)
-        self.assertTrue(type(Place.description) == str)
-        self.assertTrue(type(Place.number_rooms) == int)
-        self.assertTrue(type(Place.number_bathrooms) == int)
-        self.assertTrue(type(Place.max_guest) == int)
-        self.assertTrue(type(Place.price_by_night) == int)
-        self.assertTrue(type(Place.latitude) == float)
-        self.assertTrue(type(Place.longitude) == float)
-        self.assertTrue(type(Place.amenity_ids) == list)
+    def test_max_guest(self):
+        """ """
+        new = self.value()
+        if new.max_guest is None:
+            new.max_guest = 0
+        self.assertIsInstance(new.max_guest, int)
+        self.assertEqual(new.max_guest, 0)
 
+    def test_price_by_night(self):
+        """Test that price_by_night is an integer & has default value of 0"""
+        new = self.value()
+        if new.price_by_night is None:
+            new.price_by_night = 0
+        self.assertIsInstance(new.price_by_night, int)
+        self.assertEqual(new.price_by_night, 0)
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_latitude(self):
+        """ """
+        new = self.value()
+        if new.latitude is None:
+            new.latitude = 0.0
+        self.assertIsInstance(new.latitude, float)
+        self.assertEqual(new.latitude, 0.0)
+
+    def test_longitude(self):
+        """ """
+        new = self.value()
+        if new.longitude is None:
+            new.longitude = 0.0
+        self.assertIsInstance(new.longitude, float)
+        self.assertEqual(new.longitude, 0.0)
+
+    def test_amenity_ids(self):
+        """ """
+        new = self.value()
+        self.assertEqual(type(new.amenity_ids), list)

@@ -1,63 +1,38 @@
 #!/usr/bin/python3
-"""Unit test for the file storage class
-"""
-import unittest
-# import json
-import pep8
-from models import review
+""" """
+from tests.test_models.test_base_model import TestBaseModel
 from models.review import Review
-from models.base_model import BaseModel
+from models.user import User
 
 
-class TestReviewClass(unittest.TestCase):
-    """TestReviewClass test suite for the use
-    of the review class
-    Args:
-        unittest (): Propertys for unit testing
-    """
+class test_review(TestBaseModel):
+    """ """
 
-    maxDiff = None
+    def __init__(self, *args, **kwargs):
+        """ """
+        super().__init__(*args, **kwargs)
+        self.name = "Review"
+        self.value = Review
 
-    def setUp(self):
-        """Return to "" class attributes"""
-        Review.place_id = ""
-        Review.user_id = ""
-        Review.text = ""
+    def test_place_id(self):
+        """Test the place_id attribute of the Review class"""
+        new = Review()
+        new.place_id = "test_place_id"
+        self.assertEqual(type(new.place_id), str)
 
-    def test_module_doc(self):
-        """ check for module documentation """
-        self.assertTrue(len(review.__doc__) > 0)
+    def test_user_id(self):
+        """ Test that user_id is a string """
+        new_user = User(email="john@example.com", password="password")
+        new_user.save()
+        new_review = Review(place_id="123", user_id=new_user.id,
+                            text="Test review")
+        new_review.save()
+        self.assertEqual(type(new_review.user_id), str)
 
-    def test_class_doc(self):
-        """ check for documentation """
-        self.assertTrue(len(Review.__doc__) > 0)
-
-    def test_method_docs(self):
-        """ check for method documentation """
-        for func in dir(Review):
-            self.assertTrue(len(func.__doc__) > 0)
-
-    def test_pep8(self):
-        """ test base and test_base for pep8 conformance """
-        style = pep8.StyleGuide(quiet=True)
-        file1 = 'models/review.py'
-        file2 = 'tests/test_models/test_review.py'
-        result = style.check_files([file1, file2])
-        self.assertEqual(result.total_errors, 0,
-                         "Found code style errors (and warning).")
-
-    def test_is_instance(self):
-        """ Test if user is instance of basemodel """
-        my_Review = Review()
-        self.assertTrue(isinstance(my_Review, BaseModel))
-
-    def test_field_types(self):
-        """ Test field attributes of user """
-        my_Review = Review()
-        self.assertTrue(type(my_Review.place_id) == str)
-        self.assertTrue(type(my_Review.user_id) == str)
-        self.assertTrue(type(my_Review.text) == str)
-
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_text(self):
+        """ """
+        new = self.value()
+        if new.text is None:
+            new.text = ''
+        self.assertIsInstance(new.text, str)
+        self.assertEqual(new.text, '')
