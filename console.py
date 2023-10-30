@@ -113,8 +113,8 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        split_array = args.split(" ")
         """ Create an object of any class"""
+        split_array = args.split(" ")
         if not args:
             print("** class name missing **")
             return
