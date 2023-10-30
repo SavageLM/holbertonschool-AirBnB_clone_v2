@@ -2,10 +2,8 @@
 """ Defines the module for Console """
 import cmd
 import sys
-from shlex import split
-from datetime import datetime
 from models.base_model import BaseModel
-from models import storage
+from models.__init__ import storage
 from models.state import State
 from models.city import City
 from models.user import User
@@ -15,7 +13,7 @@ from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
-    """ Contains the functionality for the HBNB console """
+    """ Contains the functionality for the HBNB console"""
 
     # determines prompt for interactive/non-interactive modes
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
@@ -116,34 +114,26 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        try:
-            if not args:
-                raise SyntaxError()
-            my_args = args.split(" ")
-            if my_args[0] not in HBNBCommand.classes:
-                raise SyntaxError()
-            kwargs = {}
-            for i in range (1, len(my_args)):
-                key, value = tuple(my_args[i].split("="))
-                if value[0] == '"':
-                    value = value.strip('"').replace("_", " ")
-                else:
-                    try:
-                        value = eval(value)
-                    except (SyntaxError, NameError):
-                        continue
-                kwargs[key] = value
-            if kwargs == {}:
-                obj = eval(my_args[0])()
-            else:
-                obj = eval(my_args[0])(**kwargs)
-                storage.new(obj)
-            print(obj.id)
-            obj.save()
-        except SyntaxError:
+        split_array = args.split(" ")
+        if not args:
             print("** class name missing **")
-        except NameError:
+            return
+        elif split_array[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
+            return
+        new_instance = HBNBCommand.classes[split_array[0]]()
+        split_parameters = split_array[1:]
+        for value in split_parameters:
+            split = value.split("=")
+            if (split[1][0] == '"'):
+                new_instance.__dict__[
+                    split[0]] = split[1][1:-1].replace("_", " ")
+            else:
+                new_instance.__dict__[split[0]] = split[1].replace("_", " ")
+        storage.new(new_instance)
+        storage.save()
+        print(new_instance.id)
+        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -225,12 +215,15 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
-        else:
-            for k, v in storage._FileStorage__objects.items():
+            dict = storage.all(HBNBCommand.classes[args])
+            for k, v in dict.items():
+                del v.__dict__['_sa_instance_state']
                 print_list.append(str(v))
+        else:
+            for k, v in storage.all().items():
+                del v.__dict__['_sa_instance_state']
+                print_list.append(str(v))
+
         print(print_list)
 
     def help_all(self):
@@ -247,7 +240,7 @@ class HBNBCommand(cmd.Cmd):
         print(count)
 
     def help_count(self):
-        """ Creates a help display for count """
+        """ """
         print("Usage: count <class_name>")
 
     def do_update(self, args):
