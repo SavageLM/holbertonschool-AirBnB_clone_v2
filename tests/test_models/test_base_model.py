@@ -1,89 +1,129 @@
 #!/usr/bin/python3
-"""unitest for testing BaseModel class """
-from models.base_model import Base, BaseModel
+""" """
+from models.base_model import BaseModel
 import unittest
 import datetime
 from uuid import UUID
 import json
-from os import getenv
 import os
 
 
+@unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db', 'file')
 class test_basemodel(unittest.TestCase):
-    """ Unittests for testing the basemodel class"""
+    """ """
+    maxDiff = None
 
     def __init__(self, *args, **kwargs):
-        """ inicialization values """
+        """ """
         super().__init__(*args, **kwargs)
         self.name = 'BaseModel'
         self.value = BaseModel
 
     def setUp(self):
-        """ Set Up """
+        """ """
         pass
 
     def tearDown(self):
-        """ Tear Down """
         try:
             os.remove('file.json')
         except:
             pass
 
     def test_default(self):
-        """ Test default values of instance """
+        """ """
         i = self.value()
         self.assertEqual(type(i), self.value)
 
     def test_kwargs(self):
-        """ Test creation of an instance with dictionary"""
+        """ """
         i = self.value()
         copy = i.to_dict()
         new = BaseModel(**copy)
         self.assertFalse(new is i)
 
     def test_kwargs_int(self):
-        """ Test method dictionary and update method """
+        """ """
         i = self.value()
         copy = i.to_dict()
         copy.update({1: 2})
         with self.assertRaises(TypeError):
             new = BaseModel(**copy)
 
+    def test_save(self):
+        """ Testing save """
+        i = self.value()
+        i.save()
+        key = self.name + "." + i.id
+        with open('file.json', 'r') as f:
+            j = json.load(f)
+            self.assertEqual(j[key], i.to_dict())
+
+    def test_str(self):
+        """ """
+        i = self.value()
+        dictionary = {}
+        dictionary.update(i.__dict__)
+        if "_sa_instance_state" in dictionary:
+            del dictionary["_sa_instance_state"]
+        self.assertEqual(str(i), '[{}] ({}) {}'.format(self.name, i.id,
+                         dictionary))
+
     def test_todict(self):
-        """Test to_dict method """
+        """ """
         i = self.value()
         n = i.to_dict()
         self.assertEqual(i.to_dict(), n)
 
     def test_kwargs_none(self):
-        """ Test dictionary with none arguments"""
+        """ """
         n = {None: None}
         with self.assertRaises(TypeError):
             new = self.value(**n)
 
     def test_kwargs_one(self):
-        """ Test dictionary with arguments"""
+        """ """
         n = {'Name': 'test'}
         new = self.value(**n)
-        self.assertEqual(type(new), self.value)
+        self.assertTrue("Name" in new.__dict__)
 
     def test_id(self):
-        """ Test id of the instante"""
+        """ """
         new = self.value()
         self.assertEqual(type(new.id), str)
 
     def test_created_at(self):
-        """ Test creation of the instance"""
+        """ """
         new = self.value()
         self.assertEqual(type(new.created_at), datetime.datetime)
 
     def test_updated_at(self):
-        """ Test update method """
+        """ """
         new = self.value()
         self.assertEqual(type(new.updated_at), datetime.datetime)
         n = new.to_dict()
         new = BaseModel(**n)
         self.assertTrue(new.created_at == new.updated_at)
+
+    def test_delete(self):
+        """Test delete """
+        new = self.value()
+        new.save()
+        self.assertEqual(type(new.updated_at), datetime.datetime)
+        new.delete()
+        self.assertEqual(type(new.updated_at), datetime.datetime)
+
+    def test_dict(self):
+        """Test creating with dict """
+        kwargs = {'name': "California"}
+        new = self.value(**kwargs)
+        new.save()
+        self.assertTrue("name" in new.__dict__)
+
+    def test_no_weirdkeys(self):
+        """Test that not weird keys are created """
+        new = self.value()
+        new.save()
+        self.assertTrue("_sa_instance_state" not in new.to_dict())
 
 
 if __name__ == "__main__":
