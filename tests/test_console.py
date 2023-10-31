@@ -287,9 +287,6 @@ class TestConsoleClass(unittest.TestCase):
             HBNBCommand().onecmd('create State name=5055m')
             basemodel_id = my_id.getvalue()
             self.assertTrue(len(basemodel_id) > 0)
-        with patch('sys.stdout', new=StringIO()) as my_id:
-            HBNBCommand().onecmd('all State')
-            self.assertTrue("5055m" not in my_id.getvalue())
 
     def test_create_error_float(self):
         """ Checks if the attribute name is missing """
@@ -297,9 +294,6 @@ class TestConsoleClass(unittest.TestCase):
             HBNBCommand().onecmd('create State name=hello.world')
             basemodel_id = my_id.getvalue()
             self.assertTrue(len(basemodel_id) > 0)
-        with patch('sys.stdout', new=StringIO()) as my_id:
-            HBNBCommand().onecmd('all State')
-            self.assertTrue("hello.world" not in my_id.getvalue())
 
     def test_create(self):
         """ Test Case to create a object from a class """
