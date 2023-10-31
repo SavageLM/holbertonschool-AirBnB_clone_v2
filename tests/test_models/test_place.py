@@ -95,3 +95,7 @@ class test_Place(test_basemodel):
         """Check that Place is a subclass of Basemodel"""
         place = self.value()
         self.assertTrue(isinstance(place, Place))
+
+
+if __name__ == "__main__":
+    unittest.main()

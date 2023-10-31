@@ -45,3 +45,7 @@ class test_dbstorage(unittest.TestCase):
         """ FileStorage object storage created """
         from models.engine.db_storage import DBStorage
         self.assertEqual(type(storage), DBStorage)
+
+
+if __name__ == "__main__":
+    unittest.main()

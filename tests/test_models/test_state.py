@@ -38,3 +38,7 @@ class test_state(test_basemodel):
     def test_is_subclass(self):
         """Check that State is a subclass of Basemodel"""
         self.assertTrue(isinstance(self.state, State))
+
+
+if __name__ == "__main__":
+    unittest.main()
