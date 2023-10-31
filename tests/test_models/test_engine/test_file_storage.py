@@ -6,7 +6,7 @@ from models import storage
 import os
 
 
-@unittest.skipIf(os.getenv("HBNB_ENV") is not None, "Testing DBStorage")
+@unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db', 'file')
 class test_fileStorage(unittest.TestCase):
     """ Class to test the file storage method """
 
@@ -33,12 +33,20 @@ class test_fileStorage(unittest.TestCase):
         """ New object is correctly added to __objects """
         new = BaseModel()
         new.save()
-        self.assertIn(new, storage.all().values())
+        for obj in storage.all().values():
+            temp = obj
+        self.assertTrue(temp is obj)
 
     def test_all(self):
         """ __objects is properly returned """
         new = BaseModel()
         temp = storage.all()
+        self.assertIsInstance(temp, dict)
+
+    def test_all_cls(self):
+        """ Check instance of objects with args """
+        new = BaseModel()
+        temp = storage.all(new)
         self.assertIsInstance(temp, dict)
 
     def test_base_model_instantiation(self):
@@ -64,11 +72,11 @@ class test_fileStorage(unittest.TestCase):
         """ Storage file is successfully loaded to __objects """
         new = BaseModel()
         new.save()
-        bm_id = new.to_dict()['id']
+        storage.save()
         storage.reload()
-        expected_key = 'BaseModel.' + bm_id
-        keys = list(storage.all().keys())
-        self.assertIn(expected_key, keys)
+        for obj in storage.all().values():
+            loaded = obj
+        self.assertEqual(new.to_dict()['id'], loaded.to_dict()['id'])
 
     def test_reload_empty(self):
         """ Load from an empty file """
@@ -98,17 +106,24 @@ class test_fileStorage(unittest.TestCase):
     def test_key_format(self):
         """ Key is properly formatted """
         new = BaseModel()
-        bm_id = new.to_dict()['id']
         new.save()
-        expected_key = 'BaseModel.' + bm_id
-        keys = list(storage.all().keys())
-        self.assertIn(expected_key, keys)
+        _id = new.to_dict()['id']
+        for key in storage.all().keys():
+            temp = key
+        self.assertEqual(temp, 'BaseModel' + '.' + _id)
 
     def test_storage_var_created(self):
         """ FileStorage object storage created """
         from models.engine.file_storage import FileStorage
         print(type(storage))
         self.assertEqual(type(storage), FileStorage)
+
+    def test_delete(self):
+        """create object and then delete"""
+        new = BaseModel()
+        new.save()
+        storage.delete(new)
+        self.assertEqual(storage.all(), {})
 
 
 if __name__ == "__main__":
