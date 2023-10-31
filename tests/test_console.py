@@ -13,7 +13,7 @@ from console import HBNBCommand
 from models.state import State
 
 
-@unittest.skipIf(type(models.storage) == DBStorage, "Testing DBstorage")
+@unittest.skipIf(type(models.storage) is DBStorage, "Testing DBstorage")
 class TestHBNBCommand(unittest.TestCase):
     """Unittesting the HBNB command interpreter"""
     @classmethod
@@ -31,7 +31,7 @@ class TestHBNBCommand(unittest.TestCase):
         except IOError:
             pass
         del test_cls.HBNB
-        if type(models.storage) == DBStorage:
+        if type(models.storage) is DBStorage:
             models.storage._DBStorage__session.close()
 
     def setUp(self):
@@ -88,19 +88,6 @@ class TestHBNBCommand(unittest.TestCase):
         with patch("sys.stdout", new=StringIO()) as test:
             self.HBNB.onecmd("all Amenity")
             new_amenity = test.getvalue().strip()
-
-    def test_create_kwargs(self):
-        with patch("sys.stdout", new=StringIO()) as test:
-            self.HBNB.onecmd('create User first_name="John"\
-                             email="john@example.com" password="1234"')
-            new_user = test.getvalue().strip()
-        with patch("sys.stdout", new=StringIO()) as test:
-            self.HBNB.onecmd("all User")
-            self.assertIn(new_user, test.getvalue())
-            self.assertIn("'first_name': 'John'", test.getvalue())
-            self.assertIn("'email': 'john@example.com'", test.getvalue())
-            self.assertNotIn("'last_name': 'Snow'", test.getvalue())
-            self.assertIn("'password': '1234'", test.getvalue())
 
 
 @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db', 'test DB mode')

@@ -1,38 +1,53 @@
 #!/usr/bin/python3
-"""User Class Test Cases"""
+"""Unittests for testing the User class """
+import models
+from os import getenv
 import unittest
-from datetime import datetime
+from tests.test_models.test_base_model import test_basemodel
 from models.user import User
+from sqlalchemy.exc import OperationalError
 
 
-class TestUser(unittest.TestCase):
-    """Test cases for User class"""
+class test_User(test_basemodel):
+    """Unittests for testing the User class"""
 
-    def test_init(self):
-        self.assertEqual(User, type(User()))
-
-    def test_attributes(self):
-        """Testing attributes"""
-        usr = User(email="a", password="a")
-        self.assertEqual(str, type(usr.id))
-        self.assertTrue(hasattr, (usr, "__tablename__"))
-        self.assertTrue(hasattr, (usr, "email"))
-        self.assertTrue(hasattr, (usr, "password"))
-        self.assertTrue(hasattr, (usr, "first_name"))
-        self.assertTrue(hasattr, (usr, "last_name"))
-        self.assertTrue(hasattr, (usr, "places"))
-        self.assertTrue(hasattr, (usr, "reviews"))
+    def __init__(self, *args, **kwargs):
+        """ Instantiation of User instance """
+        super().__init__(*args, **kwargs)
+        self.name = "User"
+        self.value = User
+        self.user = User(email="Erney@chocorramo.com", password="conleche")
 
     def test_first_name(self):
-        """Testing type of first_name"""
-        User.first_name = "Betty"
-        self.assertEqual(str, type(User.first_name))
+        """ test first name of user instance"""
+        self.assertEqual(self.user.first_name, None)
 
     def test_last_name(self):
-        """Testing type of last_name"""
-        User.last_name = "Holberton"
-        self.assertEqual(str, type(User.last_name))
+        """ test last name of user instance"""
+        self.assertEqual(self.user.last_name, None)
 
+    def test_email(self):
+        """ test email of user instance"""
+        self.assertEqual(type(self.user.email), str)
+        self.assertEqual(self.user.email, "Erney@chocorramo.com")
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_password(self):
+        """ test if the password is string """
+        self.assertEqual(type(self.user.password), str)
+        self.assertEqual(self.user.password, "conleche")
+
+    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') != 'db', "not supported")
+    def test_without_mandatory_arguments(self):
+        """Check for mandatory arguments """
+        new = self.value()
+        with self.assertRaises(OperationalError):
+            try:
+                new.save()
+            except Exception as error:
+                models.storage._DBStorage__session.rollback()
+                raise error
+
+    @unittest.skipIf(getenv('HBNB_TYPE_STORAGE') == 'db', "not supported")
+    def test_is_subclass(self):
+        """Check that State is a subclass of Basemodel"""
+        self.assertTrue(isinstance(self.user, User))
