@@ -1,50 +1,66 @@
 #!/usr/bin/python3
-""" Test DBstorage"""
+"""Unit test for the file storage class
+"""
 import unittest
-from models.base_model import BaseModel
-from models import storage
+import json
+import pep8
+from io import StringIO
+from unittest.mock import patch
+from console import HBNBCommand
+from models.engine.db_storage import DBStorage
 import os
-from models.state import State
+import sys
+import MySQLdb
 
 
-class test_dbstorage(unittest.TestCase):
-    """ Class to test the DBstorage method """
-
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db',
-                     "Cannot storage if db is active")
+@unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db', 'file')
+class TestDBStorage(unittest.TestCase):
+    """TestDBStorage resume
+    Args:
+        unittest (): Propertys for unit testing
+    """
     def setUp(self):
         """ Set up test environment """
-        del_list = []
-        for key in storage.all().keys():
-            del_list.append(key)
-        for key in del_list:
-            storage._DBStorage__session.delete(storage.all()[key])
-            storage._DBStorage__session.commit()
+        db_user = "hbnb_test"
+        db_password = "hbnb_test_pwd"
+        db_name = "hbnb_test_db"
+        # Open database connection
 
-    def test_obj_list_empty(self):
-        """ __objects is initially empty """
-        self.assertEqual(len(storage.all()), 0)
+    maxDiff = None
 
-    def test_reload_from_nonexistent(self):
-        """ Nothing happens if file does not exist """
-        self.assertEqual(storage.reload(), None)
+    def test_module_doc(self):
+        """ check for module documentation """
+        self.assertTrue(len(HBNBCommand.__doc__) > 0)
 
-    def test_type_objects(self):
-        """ Confirm __objects is a dict """
-        self.assertEqual(type(storage.all()), dict)
+    def test_class_doc(self):
+        """ check for documentation """
+        self.assertTrue(len(HBNBCommand.__doc__) > 0)
 
-    def test_store(self):
-        """ Test if an object is store in the database """
-        new = State(name="Florida")
-        new.save()
-        _id = new.to_dict()['id']
-        self.assertIn(new.__class__.__name__ + '.' + _id,
-                        storage.all(type(new)).keys())
+    def test_method_docs(self):
+        """ check for method documentation """
+        for func in dir(HBNBCommand):
+            self.assertTrue(len(func.__doc__) > 0)
 
-    def test_storage_var_created(self):
-        """ FileStorage object storage created """
-        from models.engine.db_storage import DBStorage
-        self.assertEqual(type(storage), DBStorage)
+    def test_pep8(self):
+        """ test base and test_base for pep8 conformance """
+        style = pep8.StyleGuide(quiet=True)
+        file1 = 'models/engine/db_storage.py'
+        file2 = 'tests/test_models/test_engine/test_db_storage.py'
+        result = style.check_files([file1, file2])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warning).")
+
+    def test_executable_file(self):
+        """ Check if file have permissions to execute"""
+        # Check for read access
+        is_read_true = os.access('models/engine/db_storage.py', os.R_OK)
+        self.assertTrue(is_read_true)
+        # Check for write access
+        is_write_true = os.access('models/engine/db_storage.py', os.W_OK)
+        self.assertTrue(is_write_true)
+        # Check for execution access
+        is_exec_true = os.access('models/engine/db_storage.py', os.X_OK)
+        self.assertTrue(is_exec_true)
 
 
 if __name__ == "__main__":

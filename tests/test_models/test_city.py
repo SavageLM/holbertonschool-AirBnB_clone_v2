@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """test for city"""
 import unittest
+import os
 from os import getenv
 from models.city import City
 from models.base_model import BaseModel
