@@ -35,4 +35,5 @@
 |0-hello_route.py| Creates a Flask app that displays "Hello HBNB!"|
 |1-hbnb_route|Creates a Flask app that changes display based on route used|
 |2-c_route.py| Adds a display for '/c' route|
+|3-python_route.py| Adds a display for '/python' route|
 |

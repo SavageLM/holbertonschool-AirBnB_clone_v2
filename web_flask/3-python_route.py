@@ -3,6 +3,7 @@
 '/' returns "Hello HBNB!”
 '/hbnb returns "HBNB"
 '/c/<text>' returns the value of the variable 'text'
+'/python/<text>' returns the value of variable 'text'
 """
 from flask import Flask
 app = Flask(__name__)
@@ -22,6 +23,12 @@ def hbnb_route():
 def c_route(text):
     text_cp = text.replace('_', ' ')
     return "C {}".format(text_cp)
+
+
+@app.route('/python/<text>', strict_slashes=False)
+def py_route(text='is cool'):
+    text_cp = text.replace('_', ' ')
+    return "Python {}".format(text_cp)
 
 
 if __name__ == '__main__':
