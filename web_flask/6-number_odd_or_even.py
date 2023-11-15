@@ -6,6 +6,7 @@
 '/python/<text>' returns the value of variable 'text'
 '/number/<n>' returns "n is a number"
 '/number_template/<n>' displays an HTML if n is an int
+'/number_odd_or_even/<n>' displays an HTML file if n is an int
 """
 from flask import Flask
 from flask import render_template
@@ -43,6 +44,11 @@ def num_route(n):
 @app.route('/number_template/<int:n>', strict_slashes=False)
 def num_temp_route(n):
     return render_template('5-number.html', n=n)
+
+
+@app.route('/number_odd_or_even/<int:n>', strict_slashes=False)
+def odd_or_even_route(n):
+    return render_template('6-number_odd_or_even.html', n=n)
 
 
 if __name__ == '__main__':

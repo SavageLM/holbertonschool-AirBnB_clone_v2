@@ -38,4 +38,6 @@
 |3-python_route.py| Adds a display for '/python' route|
 |4-number_route.py| Adds a display for '/number'|
 |5-number_template.py| Displays an HTML file if n is an int|
+|6-number_odd_or_even.py| Displays an HTML file depending if n is even or odd|
+|7-states_list.py| Displays an HTML page of listed states pulled from storage|
 |
