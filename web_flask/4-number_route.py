@@ -4,6 +4,7 @@
 '/hbnb returns "HBNB"
 '/c/<text>' returns the value of the variable 'text'
 '/python/<text>' returns the value of variable 'text'
+'/number/<n>' returns "n is a number"
 """
 from flask import Flask
 app = Flask(__name__)
@@ -32,10 +33,9 @@ def py_route(text='is cool'):
     return "Python {}".format(text_cp)
 
 
-@app.route('/number/<n>', strict_slashes=False)
+@app.route('/number/<int:n>', strict_slashes=False)
 def num_route(n):
-    if type(n) is int:
-        return "{} is a number".format(n)
+    return "{} is a number".format(n)
 
 
 if __name__ == '__main__':
