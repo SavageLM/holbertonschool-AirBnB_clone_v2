@@ -40,4 +40,5 @@
 |5-number_template.py| Displays an HTML file if n is an int|
 |6-number_odd_or_even.py| Displays an HTML file depending if n is even or odd|
 |7-states_list.py| Displays an HTML page of listed states pulled from storage|
+|8-cities_by_states.py| Displays an HTML page of all states, and cities in each state|
 |
