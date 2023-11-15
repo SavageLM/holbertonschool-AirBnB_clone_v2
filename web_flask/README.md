@@ -37,4 +37,5 @@
 |2-c_route.py| Adds a display for '/c' route|
 |3-python_route.py| Adds a display for '/python' route|
 |4-number_route.py| Adds a display for '/number'|
+|5-number_template.py| Displays an HTML file if n is an int|
 |
